@@ -61,12 +61,10 @@ WSGI_APPLICATION = 'medical_store.wsgi.app'
 # --- DATABASE ---
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=os.environ.get('POSTGRES_URL') is not None
+        default=os.environ.get('POSTGRES_URL', os.environ.get('DATABASE_URL')),
+        conn_max_age=600
     )
 }
-
 # --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
