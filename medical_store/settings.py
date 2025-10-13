@@ -70,7 +70,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'medical_store.wsgi.application'
+WSGI_APPLICATION = 'medical_store.wsgi.app'
 
 
 # Database
