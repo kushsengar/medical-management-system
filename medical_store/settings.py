@@ -61,7 +61,7 @@ WSGI_APPLICATION = 'medical_store.wsgi.app'
 # --- DATABASE ---
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('POSTGRES_URL', os.environ.get('DATABASE_URL')),
+        default=os.environ.get('POSTGRES_URL'),
         conn_max_age=600
     )
 }
