@@ -29,6 +29,7 @@ urlpatterns = [
     path('invoices/<int:invoice_id>/process_return/', views.process_return, name='process_return'),
     path('returns/<int:return_id>/', views.return_receipt_detail, name='return_receipt_detail'),
     
+    path('invoices/<int:invoice_id>/send/', views.send_invoice_email, name='send_invoice_email'),
     path('custom-orders/', views.custom_order_list, name='custom_order_list'),
     path('custom-orders/add/', views.add_custom_order, name='add_custom_order'),
     path('custom-orders/<int:pk>/update/', views.update_custom_order_status, name='update_custom_order_status'),

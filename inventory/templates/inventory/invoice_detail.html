@@ -3,6 +3,15 @@
 {% block title %}Invoice #{{ invoice.id }} - {{ block.super }}{% endblock %}
 
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show no-print" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="card shadow-sm mb-4 no-print">
         <div class="card-header">
             <h5 class="mb-0">Add Medicine to Invoice</h5>
@@ -42,7 +51,7 @@
                     <h5 class="text-muted">From:</h5>
                     <p class="mb-0"><strong>Medical Store</strong></p>
                     <p class="mb-0">Bhopal, Madhya Pradesh</p>
-                    <p class="mb-0"><strong>GSTIN:</strong> 27ABCDE1234F1Z5 </p>
+                    <p class="mb-0"><strong>GSTIN:</strong> YOUR_GST_NUMBER_HERE</p>
                 </div>
                 <div class="col-sm-6 text-sm-end">
                     <h5 class="text-muted">To:</h5>
@@ -147,6 +156,11 @@
         <button onclick="downloadPDF()" class="btn btn-primary">
             <i class="bi bi-download me-1"></i>Download as PDF
         </button>
+        {% if invoice.customer.email %}
+        <a href="{% url 'send_invoice_email' invoice.id %}" class="btn btn-success">
+            <i class="bi bi-envelope-fill me-1"></i>Send to Customer
+        </a>
+        {% endif %}
     </div>
 
     <script>

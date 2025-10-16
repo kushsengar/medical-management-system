@@ -22,11 +22,15 @@ class Medicine(models.Model):
     def __str__(self):
         return self.name
 
+# inventory/models.py
+
 class Customer(models.Model):
     name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15, unique=True)
+    # ADD THIS LINE
+    email = models.EmailField(max_length=100, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    is_active = models.BooleanField(default=True) # Add this line
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

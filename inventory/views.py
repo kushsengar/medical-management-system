@@ -4,6 +4,10 @@ from .models import Medicine, Supplier, Customer, Invoice, InvoiceItem , ReturnI
 from django.db.models import F, Sum
 from .forms import CustomerForm
 from decimal import Decimal
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.contrib import messages
+import os
 
 # --- Dashboard ---
 def dashboard(request):
@@ -198,16 +202,18 @@ def add_stock(request, pk):
 
 def edit_customer(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        # Update the customer object with new data
-        customer.name = request.POST['name']
-        customer.phone_number = request.POST['phone_number']
-        customer.address = request.POST['address']
-        customer.save()
-        return redirect('customer_list')
     
-    # If GET request, show the form with current data
-    return render(request, 'inventory/edit_customer.html', {'customer': customer})
+    if request.method == 'POST':
+        # Pass the instance to update the existing customer
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        # Pre-populate the form with the customer's current data
+        form = CustomerForm(instance=customer)
+        
+    return render(request, 'inventory/edit_customer.html', {'form': form})
 
 # ADD THIS FUNCTION
 def delete_customer(request, pk):
@@ -316,3 +322,31 @@ def update_custom_order_status(request, pk):
             order.status = new_status
             order.save()
     return redirect('custom_order_list')
+
+def send_invoice_email(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+
+    if invoice.customer.email:
+        subject = f"Your Invoice #{invoice.id} from Medical Store"
+
+        # Render the HTML template to a string
+        html_message = render_to_string('inventory/invoice_email.html', {'invoice': invoice})
+
+        # Create the email message
+        email = EmailMessage(
+            subject,
+            html_message,
+            os.environ.get('EMAIL_HOST_USER'),  # Your "from" email
+            [invoice.customer.email],          # The customer's "to" email
+        )
+        email.content_subtype = "html"  # This is crucial for sending HTML emails
+
+        try:
+            email.send()
+            messages.success(request, 'Invoice successfully sent to the customer.')
+        except Exception as e:
+            messages.error(request, f'Failed to send email. Error: {e}')
+    else:
+        messages.warning(request, 'This customer does not have an email address.')
+
+    return redirect('invoice_detail', invoice_id=invoice.id)
